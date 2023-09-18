@@ -1,15 +1,15 @@
 //  Vertex shader program
 var VSHADER_SOURCE = `
 attribute vec4 a_Position;
+uniform vec4 u_Translation;
 void main() {
-    gl_Position = a_Position;  // Coordinates
-    gl_PointSize = 10.0;
+    gl_Position = a_Position + u_Translation;  // Coordinates
 }`;
 
 // Fragment Shader program
 var FSHADER_SOURCE = `
 void main() {
-    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); // Set the color
+    gl_FragColor = vec4(0.25, 0.88, 0.82, 1.0); // Set the color
 }`;
 
 function main () {
@@ -29,6 +29,13 @@ function main () {
         return;
     }
 
+    var u_Translation = gl.getUniformLocation(gl.program, 'u_Translation')
+    if (!u_Translation) {
+        console.log("Error creating the translation")
+    }
+
+    gl.uniform4f(u_Translation, 0.4, 0.4, 0.0, 0.0)
+
     // 4. Set positions of vertices
     var n = initVertexBuffers(gl);
     if (n < 0) {
@@ -43,17 +50,18 @@ function main () {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     // Draw three points
-    gl.drawArrays(gl.POINTS, 0, n);
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, n);
 }
 
 function initVertexBuffers(gl) {
     // 4.1. Define vertices
     var vertices = new Float32Array([
-        0.0, 0.5, 
-        -0.5, -0.5, 
-        0.5, -0.5
+        0.5, 0.5,
+        0.5, -0.5,
+        -0.5, -0.5,
+        -0.5, 0.5
     ]);
-    var n = 3; // The number of vertices
+    var n = 4; // The number of vertices
 
     // 4.2. Create a buffer object
     var vertexBuffer = gl.createBuffer();
